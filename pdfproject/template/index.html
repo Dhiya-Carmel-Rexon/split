@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Splitter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #007bff;
+      color: #fff;
+      padding: 1rem 0;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    nav li {
+      margin: 0 1rem;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 2rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    h1, h2 {
+      margin-bottom: 1rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    input[type="file"] {
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #a81848;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #loading-message {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    footer {
+      background-color: #007bff;
+      color: #fff;
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="#upload">Upload</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section id="upload" class="upload-section">
+      <div class="container">
+        <h1>Upload a PDF to Split</h1>
+        <form id="upload-form">
+          <input type="file" id="file-input" accept="application/pdf" required>
+          <button type="submit">Split</button>
+        </form>
+        <div id="loading-message" style="display:none;">Processing...</div>
+        <div id="result" style="display:none;">
+          <h2>Download Split PDF Files</h2>
+          <ul id="file-list"></ul>
+        </div>
+      </div>
+    </section>
+    <section id="about" class="about-section">
+      <div class="container">
+        <h2>About PDF Splitter</h2>
+        <p>This tool allows you to upload a multipage PDF and split it into individual pages. It's quick and easy to use!</p>
+        <p>For more information, visit our <a href="https://www.pdfsplitter.com">website</a>.</p>
+      </div>
+    </section>
+    <section id="contact" class="contact-section">
+      <div class="container">
+        <h2>Contact Us</h2>
+        <p>If you have any questions, feel free to <a href="mailto:support@pdfsplitter.com">email us</a>.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 PDF Splitter. All rights reserved.</p>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('upload-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const fileInput = document.getElementById('file-input');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select a PDF file.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      document.getElementById('loading-message').style.display = 'block';
+
+      fetch('/upload', {
+        method: 'GET',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('loading-message').style.display = 'none';
+        const fileList = document.getElementById('file-list');
+        fileList.innerHTML = '';
+        data.files.forEach(file => {
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = `/download/${file}`;
+          link.textContent = file;
+          li.appendChild(link);
+          fileList.appendChild(li);
+        });
+        document.getElementById('result').style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('loading-message').style.display = 'none';
+        alert('An error occurred while processing the PDF.');
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
