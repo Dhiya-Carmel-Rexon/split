@@ -1,38 +1,38 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse
 import PyPDF2
 import os
+from django.conf import settings
 
-# Create your views here.
 def front(request):
-    return render(request, 'template/index.html')
+    return render(request, 'front.html')
 
-def split(request):
-    if request.method == 'GET' and request.FILES.get('pdf_file'):
-        pdf_file = request.FILES['pdf_file']
+def split_pdf(request):
+    if request.method == 'POST' and request.FILES.get('file-input'):
+        pdf_file = request.FILES['file-input']
         pdf_reader = PyPDF2.PdfFileReader(pdf_file)
 
-        # Create a folder to save the split PDFs
-        output_dir = 'splitted_pdfs'
+        output_dir = os.path.join(settings.MEDIA_ROOT, 'projectoutput')
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        # Split the PDF
+        split_files = []
         for page_num in range(pdf_reader.numPages):
             pdf_writer = PyPDF2.PdfFileWriter()
             pdf_writer.addPage(pdf_reader.getPage(page_num))
 
-            output_filename = f'{output_dir}/page_{page_num + 1}.pdf'
+            output_filename = os.path.join(output_dir, f'page_{page_num + 1}.pdf')
             with open(output_filename, 'wb') as output_file:
                 pdf_writer.write(output_file)
 
-        # Variable to pass to the template
-        split_success_message = "PDF has been split successfully."
+            split_files.append(f'{settings.MEDIA_URL}projectouput/page_{page_num + 1}.pdf')
 
-        return render(request, 'template/index.html', {'message': split_success_message})
-    
-    return redirect('index')
+        response_data = {'files': split_files}
+        return JsonResponse(response_data)
 
+    #return JsonResponse({'error': 'Invalid request method or no file uploaded.'})
 
-
-
+def view_split_files(request):
+    output_dir = os.path.join(settings.MEDIA_ROOT, 'projectoutput')
+    split_files = os.listdir(output_dir)
+    return render(request, 'split_files.html', {'split_files': split_files})

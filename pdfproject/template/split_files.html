@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Split PDF Files</title>
+</head>
+<body>
+    <h1>Split PDF Files</h1>
+    <ul>
+        {% for file_name in split_files %}
+            <li><a href="{{ MEDIA_URL }}projectoutput/{{ split_files }}">{{ split_files }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -93,7 +93,7 @@
 
     footer {
       background-color: #007bff;
-      color: #fff;
+      color: #5d1a28;
       text-align: center;
       padding: 1rem 0;
       margin-top: auto;
@@ -114,8 +114,9 @@
     <section id="upload" class="upload-section">
       <div class="container">
         <h1>Upload a PDF to Split</h1>
-        <form id="upload-form">
-          <input type="file" id="file-input" accept="application/pdf" required>
+        <form id="upload-form" enctype="multipart/form-data" method="post" action="{% url 'split_files' %}">
+          {% csrf_token %}
+          <input type="file" id="file-input" name="file" accept="application/pdf" required>
           <button type="submit">Split</button>
         </form>
         <div id="loading-message" style="display:none;">Processing...</div>
@@ -144,50 +145,5 @@
       <p>&copy; 2024 PDF Splitter. All rights reserved.</p>
     </div>
   </footer>
-  <script>
-    document.getElementById('upload-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const fileInput = document.getElementById('file-input');
-      const file = fileInput.files[0];
-      if (!file) {
-        alert("Please select a PDF file.");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      document.getElementById('loading-message').style.display = 'block';
-
-      fetch('/upload', {
-        method: 'GET',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('loading-message').style.display = 'none';
-        const fileList = document.getElementById('file-list');
-        fileList.innerHTML = '';
-        data.files.forEach(file => {
-          const li = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = `/download/${file}`;
-          link.textContent = file;
-          li.appendChild(link);
-          fileList.appendChild(li);
-        });
-        document.getElementById('result').style.display = 'block';
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('loading-message').style.display = 'none';
-        alert('An error occurred while processing the PDF.');
-      });
-    });
-  </script>
 </body>
 </html>
-
-
-
