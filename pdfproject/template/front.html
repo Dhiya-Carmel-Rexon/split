@@ -114,9 +114,9 @@
     <section id="upload" class="upload-section">
       <div class="container">
         <h1>Upload a PDF to Split</h1>
-        <form id="upload-form" enctype="multipart/form-data" method="post" action="{% url 'split_files' %}">
+        <form id="upload-form" enctype="multipart/form-data" method="post" action="{% url 'split_pdf' %}">
           {% csrf_token %}
-          <input type="file" id="file-input" name="file" accept="application/pdf" required>
+          <input type="file" id="file-input" name="file-input" accept="pdf" required>
           <button type="submit">Split</button>
         </form>
         <div id="loading-message" style="display:none;">Processing...</div>
