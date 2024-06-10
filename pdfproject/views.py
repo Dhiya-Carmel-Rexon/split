@@ -16,18 +16,18 @@ def split_pdf(request):
         os.makedirs(output_dir, exist_ok=True)
 
         split_files = []
+        # Iterate over the range of total pages in the PDF document and add each page to the PdfWriter object
         for page_num in range(len(pdf_reader.pages)):
             pdf_writer = PyPDF2.PdfWriter()
             pdf_writer.add_page(pdf_reader.pages[page_num])
-
-            output_filename = os.path.join(output_dir, f'page_{page_num + 1}.pdf')
-            with open(output_filename, 'wb') as output_file:
+        # Construct the output file name and write the PDF content to the output file
+        output_filename = os.path.join(output_dir, f'page_{page_num + 1}.pdf')
+        with open(output_filename, 'wb') as output_file:
                 pdf_writer.write(output_file)
-
-            split_files.append(f'{settings.MEDIA_URL}page_{page_num + 1}.pdf')
-        #response_data = {'split_files': split_files}
+                split_files.append(f'{settings.MEDIA_URL}page_{page_num + 1}.pdf')
+        '''#response_data = {'split_files': split_files}
         #split_filess = os.listdir(output_dir)
-        #pdf_path = [request.build_absolute_uri(settings.MEDIA_URL + os.path.basename(files))for files in split_filess]
+        #pdf_path = [request.build_absolute_uri(settings.MEDIA_URL + os.path.basename(files))for files in split_filess]'''
 
         return render(request, 'template/split_files.html', {'split_files': split_files})
     return render(request, 'template/split_files.html')
