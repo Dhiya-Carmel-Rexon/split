@@ -3,6 +3,9 @@ from django.http import JsonResponse, HttpResponse
 import PyPDF2
 import os
 from django.conf import settings
+#from .forms import SplitPDF
+from datetime import datetime
+from .models import SplitPDF
 
 def front(request):
     return render(request, 'template/front.html')
@@ -11,26 +14,41 @@ def split_pdf(request):
     if request.method == 'POST' and request.FILES['file-input']:
         pdf_file = request.FILES['file-input']
         pdf_reader = PyPDF2.PdfReader(pdf_file)
-
-        output_dir = settings.MEDIA_ROOT
-        os.makedirs(output_dir, exist_ok=True)
-
         split_files = []
+        input_file_name ,extension= os.path.splitext(pdf_file)
+        output_dir = os.path.join(settings.MEDIA_ROOT,  input_file_name)
+        os.makedirs(output_dir, exist_ok=True)
+        split_pdf_instance = SplitPDF.objects.create(
+                split_pdf_name = pdf_file,
+                split_pdf_location = output_dir,
+                split_date_time = datetime.now())
+        split_pdf_instance.save()
+   
         # Iterate over the range of total pages in the PDF document and add each page to the PdfWriter object
         for page_num in range(len(pdf_reader.pages)):
             pdf_writer = PyPDF2.PdfWriter()
-            pdf_writer.add_page(pdf_reader.pages[page_num])
+            pdf_writer.add_page(pdf_reader.pages[page_num])     
+        
         # Construct the output file name and write the PDF content to the output file
-        output_filename = os.path.join(output_dir, f'page_{page_num + 1}.pdf')
-        with open(output_filename, 'wb') as output_file:
-                pdf_writer.write(output_file)
-                split_files.append(f'{settings.MEDIA_URL}page_{page_num + 1}.pdf')
-        '''#response_data = {'split_files': split_files}
-        #split_filess = os.listdir(output_dir)
-        #pdf_path = [request.build_absolute_uri(settings.MEDIA_URL + os.path.basename(files))for files in split_filess]'''
+            output_filename = os.path.join(output_dir, f'page_{page_num + 1}.pdf')
+            with open(output_filename, 'wb') as output_file:
+                    pdf_writer.write(output_file)
+            
+           # split_pdf_name = f'{pdf_file.name}_page_{page_num + 1}'
+            #split_files.append(output_filename)
+        #response_data = {'split_files': split_files}
+        split_filess = os.listdir(output_dir)
+        pdf_path = [request.build_absolute_uri(settings.MEDIA_URL + os.path.basename(files))for files in split_filess]
 
-        return render(request, 'template/split_files.html', {'split_files': split_files})
+        return render(request, 'template/split_files.html', {'split_files': pdf_path})
     return render(request, 'template/split_files.html')
+'''def upload_pdf(request):
+    if request.method == 'POST':
+        form =SplitPDF(request.POST, request.FILES)
+        if form.is_valid():
+            pdf = form.save()
+            split_pdf = split_pdf(pdf)
+        return render(request, 'template/upload', {'form': form})'''
 
     #return JsonResponse({'error': 'Invalid request method or no file uploaded.'})
 

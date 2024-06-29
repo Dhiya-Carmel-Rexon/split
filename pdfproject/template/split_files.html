@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Split PDF Files</h1>
-    <ul>
+    <ul><!-- Iterate over each file name in the split_files list and create a list item with a download link for each file -->
         {% for file_name in split_files %}
             <li><a href="{{ file_name }}" download="">{{ file_name }}</a></li>
         {% endfor %}

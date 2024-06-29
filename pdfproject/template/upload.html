@@ -1,0 +1,11 @@
+{% extends "front.html" %}
+
+{% block title %}Blog Posts{% endblock title %}
+
+{% block content %}
+    <h2>All Blog Posts</h2>
+    {% for z in p_no %}
+        <h1>{{ z.title }}</h1>
+        <p>{{ z.content }}</p>
+    {% endfor %}
+{% endblock content %}
