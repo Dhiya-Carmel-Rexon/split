@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+#import
 from pathlib import Path
 import os 
 
@@ -17,9 +17,8 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 print(BASE_DIR)
 
-MEDIA_URL = 'myproject/projectoutput/'
-MEDIA_ROOT = BASE_DIR /  'myproject/projectoutput/'
-
+MEDIA_URL = '/myproject/'# URL that handles the media served from MEDIA_ROOT
+MEDIA_ROOT = BASE_DIR /  'myproject'# Filesystem path where media files are stored
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -38,11 +37,14 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sessions',
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'pdfproject',
 ]
+
 
 
 MIDDLEWARE = [

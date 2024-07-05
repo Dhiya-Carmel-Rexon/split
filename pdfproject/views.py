@@ -6,6 +6,15 @@ from django.conf import settings
 #from .forms import SplitPDF
 from datetime import datetime
 from .models import SplitPDF
+#API
+from rest_framework.views import APIView
+from .serializers import SplitPDFSerializer
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser,FormParser
+from rest_framework import status
+from rest_framework.decorators import api_view
+import json
+#from rest_framework.parsers import MultiPartParser, FormParser
 
 def front(request):
     return render(request, 'template/front.html')
@@ -14,25 +23,25 @@ def split_pdf(request):
     if request.method == 'POST' and request.FILES['file-input']:
         pdf_file = request.FILES['file-input']
         pdf_reader = PyPDF2.PdfReader(pdf_file)
-        split_files = []
-        input_file_name ,extension= os.path.splitext(pdf_file)
-        output_dir = os.path.join(settings.MEDIA_ROOT,  input_file_name)
+        pdf_file_name =pdf_file.name
+        input_file_name ,extension=os.path.split( pdf_file_name)
+        output_dir = os.path.join(settings.MEDIA_ROOT,  'projectoutput/')
         os.makedirs(output_dir, exist_ok=True)
         split_pdf_instance = SplitPDF.objects.create(
-                split_pdf_name = pdf_file,
+                original_pdf = pdf_file,
                 split_pdf_location = output_dir,
                 split_date_time = datetime.now())
         split_pdf_instance.save()
    
         # Iterate over the range of total pages in the PDF document and add each page to the PdfWriter object
-        for page_num in range(len(pdf_reader.pages)):
+        '''for page_num in range(len(pdf_reader.pages)):
             pdf_writer = PyPDF2.PdfWriter()
             pdf_writer.add_page(pdf_reader.pages[page_num])     
         
         # Construct the output file name and write the PDF content to the output file
             output_filename = os.path.join(output_dir, f'page_{page_num + 1}.pdf')
             with open(output_filename, 'wb') as output_file:
-                    pdf_writer.write(output_file)
+                    pdf_writer.write(output_file)'''
             
            # split_pdf_name = f'{pdf_file.name}_page_{page_num + 1}'
             #split_files.append(output_filename)
@@ -42,6 +51,31 @@ def split_pdf(request):
 
         return render(request, 'template/split_files.html', {'split_files': pdf_path})
     return render(request, 'template/split_files.html')
+
+def split_pdf(file_path, output_folder):
+    with open(file_path, "rb") as file:
+        reader = PyPDF2.PdfFileReader(file)
+        for i in range(reader.numPages):
+            writer = PyPDF2.PdfFileWriter()
+            writer.addPage(reader.getPage(i))
+            output_path = f"{output_folder}/split_page_{i+1}.pdf"
+            with open(output_path, "wb") as output_file:
+                writer.write(output_file)
+    return [f"{output_folder}/split_page_{i+1}.pdf" for i in range(reader.numPages)]
+
+class SplitPDFView(APIView):
+    serializer_class=SplitPDFSerializer
+    parser_classes=[MultiPartParser,FormParser]
+
+    def post(self,request):
+        request.user=SplitPDF.objects.first()
+        serializer=self.serializer_class(request.user,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+                
 '''def upload_pdf(request):
     if request.method == 'POST':
         form =SplitPDF(request.POST, request.FILES)

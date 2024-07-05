@@ -4,9 +4,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
+
+
+
 urlpatterns = [
     path('', views.front, name='front'),# Maps the URL 'front/' to the front view function and names it 'front'
     path('split_files/', views.split_pdf, name='split_pdf'),# Maps the URL 'split_files/' to the split_pdf view function and names it 'split_pdf'
+    path('api_split/', views.SplitPDFView.as_view(), name='SplitPDFView'),
+   
 ]
 
 if settings.DEBUG :

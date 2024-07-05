@@ -1,11 +1,9 @@
-{% extends "front.html" %}
+{% if model_name %}
+    <p>Model: {{ model_name }}</p>
+{% endif %}
 
-{% block title %}Blog Posts{% endblock title %}
-
-{% block content %}
-    <h2>All Blog Posts</h2>
-    {% for z in p_no %}
-        <h1>{{ z.title }}</h1>
-        <p>{{ z.content }}</p>
-    {% endfor %}
-{% endblock content %}
+{% for split_pdf in split_pdfs %}
+    {{ split_pdf._meta.model_name }}  <!-- Correct usage: inside the loop -->
+    <!-- Display other fields -->
+    {{ split_pdf.field_name }}
+{% endfor %}

@@ -4,13 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Split PDF Files</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            color: #af4c4c;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #156b30;
+            font-weight: bold;
+            padding: 10px 25px;
+            border: 2px solid #007BFF;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        a:hover {
+            background-color: #8b43ca;
+            color: #180606;
+        }
+    </style>
 </head>
 <body>
     <h1>Split PDF Files</h1>
-    <ul><!-- Iterate over each file name in the split_files list and create a list item with a download link for each file -->
+    <ul>
+        <!-- Iterate over each file name in the split_files list and create a list item with a download link for each file -->
         {% for file_name in split_files %}
-            <li><a href="{{ file_name }}" download="">{{ file_name }}</a></li>
+            <li><a href="{{ file_name }}" download>{{ file_name }}</a></li>
         {% endfor %}
     </ul>
 </body>
 </html>
+
